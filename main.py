@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
+
 
 dataset = pd.read_csv('Data.csv')
 
@@ -30,6 +31,10 @@ y = le.fit_transform(y)
 
 # splitting the dataset into the training set and test set
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
 # Feature Scaling
+sc = StandardScaler()
+x_train[:, 3:] = sc.fit_transform(x_train[:, 3:])
+x_test[:, 3:] = sc.transform(x_test[:, 3:])
+
