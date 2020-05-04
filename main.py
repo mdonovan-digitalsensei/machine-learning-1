@@ -5,36 +5,33 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
-
+from sklearn.linear_model import LinearRegression
 
 dataset = pd.read_csv('Data.csv')
 
 x = dataset.iloc[:, :-1].values
 y = dataset.iloc[:, -1].values
 
-# replace missing values
-imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-imputer.fit(x[:, 1:3])
-x[:, 1:3] = imputer.transform(x[:, 1:3])
-
-
-# split the country field into columns we do this so that
-# the machine doesn't assume a relationship between country codes
-
-ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(),[0])], remainder='passthrough')
-x = np.array(ct.fit_transform(x))
-
-# change dependent variable to numeric
-
-le = LabelEncoder()
-y = le.fit_transform(y)
-
-# splitting the dataset into the training set and test set
-
+# split the data
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
-# Feature Scaling
-sc = StandardScaler()
-x_train[:, 3:] = sc.fit_transform(x_train[:, 3:])
-x_test[:, 3:] = sc.transform(x_test[:, 3:])
+# train simple linear regression model on training set
+regressor = LinearRegression()
+regressor.fit(x_train, y_train)
+
+y_pred = regressor.predict(x_test)
+
+plt.scatter(x_train, y_train, color = 'red')
+plt.plot(x_train, regressor.predict(x_train), color = 'blue')
+plt.title('Salary vs Experience (Training set)')
+plt.xlabel('years of experience')
+plt.ylabel('Salary')
+plt.show()
+
+plt.scatter(x_test, y_test, color = 'red')
+plt.plot(x_train, regressor.predict(x_train), color = 'blue')
+plt.title('Salary vs Experience (Test set)')
+plt.xlabel('years of experience')
+plt.ylabel('Salary')
+plt.show()
 
